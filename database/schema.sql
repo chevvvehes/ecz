@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE
+);
+
+CREATE TABLE IF NOT EXISTS departments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role_id INTEGER NOT NULL,
+    department_id INTEGER NOT NULL,
+    full_name TEXT NOT NULL,
+    login TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    password_hash TEXT NOT NULL CHECK (length(password_hash) = 64),
+    FOREIGN KEY (role_id)
+        REFERENCES roles(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (department_id)
+        REFERENCES departments(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_full_name
+    ON users(full_name COLLATE NOCASE);
+
+CREATE INDEX IF NOT EXISTS idx_users_role_id ON users(role_id);
+CREATE INDEX IF NOT EXISTS idx_users_department_id ON users(department_id);
